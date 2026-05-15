@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+        <main class="container py-4">
+            <h1>Diario de Recetas</h1>
+            <p>Este proyecto de CS50 te ayudará a registrar y mejorar tus recetas con ia para obtener verdaderos cafesazos.</p>
+
+        <section>
+            <button id="receta" class="btn btn-dark">Quiero hacer una receta</button>
+
+            <button id="tip" class= "btn btn-dark">Dame un tip</button>
+            <p id="datip"></p>
+        </section>
+
+        </main>
+        <script>
+            document.querySelector("#tip").addEventListener("click", function() {
+                document.querySelector("#datip").innerHTML = "Siempre usa granos frescos, de preferencia de especialidad ;)";
+            });
+
+            document.querySelector("#receta").addEventListener("click", function() {
+                window.location.href = "/recetas";
+            });
+        </script>
+
+{% endblock %}

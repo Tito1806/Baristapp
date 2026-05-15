@@ -1,0 +1,127 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+<main class="container mt-4">
+
+    <section class="card shadow-sm p-4 rounded-4">
+
+        <h2 class="text-center">Crea tu receta</h2>
+
+        <div class="mb-3">
+            <label for="metodo" class="form-label d-block text-center">
+                Método de extracción
+            </label>
+
+            <select id="metodo" name="metodo" class="form-select form-select-lg">
+
+                <option value="Prensa Francesa">
+                    Prensa Francesa
+                </option>
+
+                <option value="Timemore B75">
+                    Timemore B75
+                </option>
+
+            </select>
+        </div>
+
+        <!-- Formulario que envía POST a la misma ruta -->
+        <form method="POST">
+            <div class="mb-3">
+                <label for="nombre" class="form-label d-block text-center">Nombre de la Receta</label>
+                <input type="text" id="nombre" name="nombre" class="form-control form-control-lg" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="cafe" class="form-label d-block text-center">Gramos de café</label>
+                <input type="number" id="cafe" name="cafe" class="form-control form-control-lg" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="temp" class="form-label d-block text-center">Temperatura del agua (Cº)</label>
+                <input type="number" id="temp" name="temp" class="form-control form-control-lg" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="ratio" class="form-label d-block text-center">Ratio 1:</label>
+                <input type="number" id="ratio" name="ratio" class="form-control form-control-lg" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="infusion" class="form-label d-block text-center">Minutos de infusión</label>
+                <input type="number" id="infusion" name="infusion" class="form-control form-control-lg" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="comentarios" class="form-label d-block text-center">Comentarios</label>
+                <input type="text" id="comentarios" name="comentarios" class="form-control form-control-lg">
+            </div>
+
+            <button type="submit" class="btn btn-success btn-lg w-100">Guardar receta</button>
+        </form>
+
+        <!-- Contenedor de tarjetas -->
+        <div id="tarjetas" class="mt-4">
+            {% for r in recetas %}
+            <div class="card mb-3" data-id="{{ r.id }}" data-nombre="{{ r.nombre }}" data-g_cafe="{{ r.g_cafe }}" data-temp="{{ r.temp }}" data-ratio="{{ r.ratio }}" data-infusion="{{ r.infusion }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ r.nombre }}</h5>
+                    <p class="card-text">Café: {{ r.g_cafe }} g</p>
+                    <p class="card-text">Agua: {{ r.g_cafe * (r.ratio|int) }} g a {{ r.temp }} ºC</p>
+                    <p class="card-text">Ratio: 1:{{ r.ratio }}</p>
+                    <p class="card-text">Infusión: {{ r.infusion }} min</p>
+                    {% if r.comentarios %}
+                    <p class="card-text"><strong>Comentarios:</strong> {{ r.comentarios }}</p>
+                    {% endif %}
+
+                    <!-- Botón eliminar receta -->
+                    <form action="/eliminar/{{ r.id }}" method="POST" class="mb-2">
+                        <button type="submit" class="btn btn-danger btn-sm">Eliminar receta</button>
+                    </form>
+
+                    <!-- Botón mejorar receta -->
+                    <div>
+                        <input type="text" id="comentario_ia_{{ r.id }}" placeholder="Qué no te gustó del café?" class="form-control mb-2">
+                        <button type="button" class="btn btn-warning btn-sm" onclick="mejorarReceta({{ r.id }})">
+                            Mejorar receta
+                        </button>
+                        <div id="consejo_ia_{{ r.id }}" class="mt-1"></div>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </section>
+
+</main>
+
+<!-- JS para llamar a la IA Hugging Face -->
+<script>
+function mejorarReceta(id) {
+    let comentario = document.querySelector(`#comentario_ia_${id}`).value;
+    let card = document.querySelector(`#consejo_ia_${id}`);
+    let cardDiv = document.querySelector(`.card[data-id='${id}']`);
+
+    // Leer valores desde data-attributes
+    let nombre = cardDiv.dataset.nombre;
+    let g_cafe = parseInt(cardDiv.dataset.g_cafe);
+    let temp = parseInt(cardDiv.dataset.temp);
+    let ratio = parseInt(cardDiv.dataset.ratio);
+    let infusion = parseInt(cardDiv.dataset.infusion);
+
+    fetch("/mejorar_receta", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({nombre, g_cafe, temp, ratio, infusion, comentario})
+    })
+    .then(res => res.json())
+    .then(data => {
+        card.innerHTML = `<div class="alert alert-info">${data.consejo}</div>`;
+    });
+}
+</script>
+
+{% endblock %}

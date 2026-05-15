@@ -1,0 +1,61 @@
+body {
+    background-color: #f7f2ec;
+}
+
+main {
+    max-width: 720px;
+}
+
+.card {
+    border: none;
+}
+
+.form-label {
+    font-weight: 600;
+}
+
+h1{
+    color: #3e2723;
+}
+nav a {
+    margin-right: 10px;
+}
+
+button {
+    min-height: 48px;
+}
+
+#guardado {
+    font-size: 1.1rem;
+    background-color: #fff8e8;
+    padding: 16px;
+    border-radius: 12px;
+}
+
+#datip {
+    font-weight: bold;
+    margin-top: 10px
+}
+
+.btn {
+    border-radius: 8px;
+}
+
+.hero-card {
+    animation: fadeIn 1s ease-in;
+    padding: 24px;
+    border-radius: 16px;
+    margin-top: 20px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
