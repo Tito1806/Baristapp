@@ -1,6 +1,7 @@
 from cs50 import SQL
 from flask import Flask, render_template, request, redirect, jsonify
 from openai import OpenAI
+import os
 import sqlite3
 
 app = Flask(__name__)
@@ -61,7 +62,8 @@ def mejorar_receta():
 
     client = OpenAI(
         base_url="https://router.huggingface.co/v1",
-        api_key="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"
+        #api oculta 
+        api_key=os.getenv("HF_API_KEY")
     )
 
     completion = client.chat.completions.create(
